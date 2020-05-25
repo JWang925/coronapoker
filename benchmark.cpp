@@ -5,8 +5,6 @@
 #include "game.h"
 #include "game_state.h"
 #include "random_player.h"
-#include "ehs_player.h"
-
 using namespace std;
 
 int main()
@@ -19,14 +17,14 @@ int main()
 	// Define the 2 players, one AI, the other AI/player
 	int nhands=50000;	
 	Player* player1 = new RandomPlayer();
-	Player* player2 = new EhsPlayer();
+	Player* player2 = new RandomPlayer();
 	game.AddPlayer(0,10000, player1);
 	game.AddPlayer(1,10000, player2);
 	game.SetNumOfHands(nhands);
 	#ifdef DEBUG
 		game.PrintGameState();
 	#endif
-	
+
 	clock_t begin= clock();
 	game.Start();
 	clock_t end = clock();

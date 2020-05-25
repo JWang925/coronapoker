@@ -1,8 +1,13 @@
+/* 
+ * pokerhand.cpp
+ */
 
 #include "pokerhand.h"
 #include <vector>
 #include "card.h"
 #include <algorithm>
+
+using namespace std;
 
 PokerHand::PokerHand (){ //default constructor
 	hand.reserve(7);
@@ -25,6 +30,7 @@ PokerHand::PokerHand (const int ncard){ //constructor by defining number of rand
 		++icard;
 		if(j==1) {handmap[i][j+13]=1;handmap[0][j+13]++;}
 	}
+	this->UpdateStrength();
 }
 
 PokerHand::PokerHand (const char* pokerhand) { //constructor from a string input such as "KH KD TC 3C"
@@ -37,8 +43,8 @@ PokerHand::PokerHand (const char* pokerhand) { //constructor from a string input
 	       		case 'J' : i=11; break;
 	       		case 'T' : i=10; break;
 	      		case '9' : i=9 ; break;
-		   	case '8' : i=8 ; break;
-			case '7' : i=7 ; break;
+		   	    case '8' : i=8 ; break;
+			    case '7' : i=7 ; break;
 		       	case '6' : i=6 ; break;
 		       	case '5' : i=5 ; break;
 	     	  	case '4' : i=4 ; break;
@@ -57,7 +63,7 @@ PokerHand::PokerHand (const char* pokerhand) { //constructor from a string input
 	      	}
 	      	pokerhand++;
 
-		Card card(j,i);
+		Card card(i,j);
 		hand.push_back(card); //update the vector of cards
 
 	      	if(i==1) {handmap[j][14]++; handmap[0][14]++;} //update the handmap
@@ -67,12 +73,27 @@ PokerHand::PokerHand (const char* pokerhand) { //constructor from a string input
 		i=0;
 		j=0;
    	}
+	this->UpdateStrength();
 };
 
 
-PokerHand::~PokerHand(){}
+PokerHand::~PokerHand() { 
 
-void PokerHand::add( const Card & card){
+}
+
+bool operator == (const PokerHand &ph1, const PokerHand &ph2) {
+	return (ph1.strength == ph2.strength);
+}
+
+bool operator < (const PokerHand &ph1, const PokerHand &ph2) {
+	return (ph1.strength < ph2.strength);
+}
+
+bool operator > (const PokerHand &ph1, const PokerHand &ph2) {
+	return (ph1.strength > ph2.strength);
+}
+
+void PokerHand::add(Card card){
 	hand.push_back(card);
 
 	int i=card.GetRank();
@@ -83,6 +104,8 @@ void PokerHand::add( const Card & card){
 	handmap[j][i]++;
 	handmap[0][i]++;
 	handmap[j][0]++;
+//	cout << "Add " << card << " success" << endl;
+	this->UpdateStrength();
 }
 
 void PokerHand::printarray(){
@@ -98,9 +121,9 @@ void PokerHand::print(){
 	std::cout<<std::endl;
 }
 
-
-std::vector<int> PokerHand::GetStrength(){
-	do{
+void PokerHand::UpdateStrength() {
+	std::fill(strength.begin(),strength.end(),0);
+	do {
 		if( this->_is_SF()) { continue;}
 		if( this->_is_quad()) {continue;}
 		if( this->_is_FH()) {continue;}
@@ -110,7 +133,10 @@ std::vector<int> PokerHand::GetStrength(){
 		if( this->_is_two_pairs()){continue;}
 		if( this->_is_one_pair()) {continue;} 
 		this->_high_cards();
-	}while (0);
+	} while (0);
+}
+
+std::vector<int> PokerHand::GetStrength(){
 	return strength;
 }
 
@@ -304,7 +330,7 @@ bool PokerHand::_is_one_pair(){
 		if(handmap[0][rank]==2) { //found first pair
 			(*it)=rank;it++; //document it!
 			for(int rank2=14; rank2>=2; rank2--){ //now start to record the strengths, again downward from Ace (14).
-				if(handmap[0][rank2]==1 && it!=strength.end()){
+				if(handmap[0][rank2]==1 && it!= (strength.end()-1)  ){ //need strength.end()-1 here because we only need 3 kickers for 1 pair hand, thus last entry of vector is unpopulated
 					(*it)=rank2; it++; 
 				}
 			}

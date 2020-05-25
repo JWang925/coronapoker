@@ -5,7 +5,9 @@
 #include "game.h"
 #include "game_state.h"
 #include "random_player.h"
+#include "human_player.h"
 #include "ehs_player.h"
+#include "server.h"
 
 using namespace std;
 
@@ -16,9 +18,9 @@ int main()
 	// Instantiate Game
     Game game;
 	//Setup game here
-	// Define the 2 players, one AI, the other AI/player
-	int nhands=50000;	
-	Player* player1 = new RandomPlayer();
+	// Define the 2 players.
+	int nhands=5;	
+	Player* player1 = new HumanPlayer();
 	Player* player2 = new EhsPlayer();
 	game.AddPlayer(0,10000, player1);
 	game.AddPlayer(1,10000, player2);
@@ -26,7 +28,7 @@ int main()
 	#ifdef DEBUG
 		game.PrintGameState();
 	#endif
-	
+
 	clock_t begin= clock();
 	game.Start();
 	clock_t end = clock();

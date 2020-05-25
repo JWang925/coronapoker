@@ -12,6 +12,8 @@
 #include <cstdlib>
 #include "card.h"
 
+using namespace std;
+
 class PokerHand {
 public:
 	PokerHand(); //default constructor
@@ -20,20 +22,24 @@ public:
 
 	PokerHand (const int ); //constructor by defining number of random cards, generate a random hand. For example, PokerHand hand1(7);
 
+	friend bool operator < (const PokerHand &ph1, const PokerHand &ph2);
+	friend bool operator == (const PokerHand &ph1, const PokerHand &ph2);
+	friend bool operator > (const PokerHand &ph1, const PokerHand &ph2);
+
 	~PokerHand (); //destructor
 
-	void add (const Card & ); //add a card to the card map
+	void add (Card ); //add a card to the card map
 	
 	void print();
 	void printarray();
 
 	//std::vector<Card> GetMadeHand(); //return a 5-card list which is the final made hand
 
-	std::vector<int> GetStrength();
+	vector<int> GetStrength();
 	//check if hand is SF, return a vector of length 6 signifying [hand type,kicker1,kicker2,kicker3,kicker4,kicker5]
 	//strength 8=SF; 7=Quad; 6=Full House; 5=Flush 4=Straight 3=trip 2=twopairs 1=onepair 0=highcard
 
-	std::vector<Card> GetWinnerHand(); //only working for Strength=8 and Strength 7; must be run after Strength is computed.
+	vector<Card> GetWinnerHand(); //only working for Strength=8 and Strength 7; must be run after Strength is computed.
 	bool ifWinnerHandContainsHoleCards(); //check if the Winner Hand contains the private cards
 
 	bool _is_SF(); 
@@ -48,6 +54,7 @@ public:
 
 private:
 	int handmap[5][15]= {{0}}; //an 2D array initialized to zero which is used to do hand strength computation
-	std::vector <Card> hand; // a vector of cards contained
-	std::vector <int> strength={0,0,0,0,0,0}; //a vector indicating the show-down value of the hand
+	vector <Card> hand; // a vector of cards contained
+	vector <int> strength={0,0,0,0,0,0}; //a vector indicating the show-down value of the hand
+	void UpdateStrength();
 };
